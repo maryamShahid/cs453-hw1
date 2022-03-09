@@ -9,16 +9,32 @@
 name: Upload Python Package
 
 on:
+  - push
+  - pull_request
   release:
     types: [published]
 
 jobs:
-  deploy:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ '3.8', '3.9', '3.10' ]
+    steps:
+       - uses: actions/checkout@master
+       - name: Install Requirements
+       - run: |
+            pip install -r requirements.txt
+            pip install pytest
+            pytest
 
+  build-publish:
+
+    needs: test
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@master
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
